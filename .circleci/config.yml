@@ -1,0 +1,30 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@1.5.0
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.10.2
+    steps:
+      - checkout
+      - run:
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: backend/requirements/local.txt
+      - run:
+          name: Running tests
+          command: |
+            python3 backend/manage.py test
+      - store_artifacts:
+          path: test-reports/
+          destination: python_app
+
+workflows:
+  sample:
+    jobs:
+      - build-and-test
